@@ -1,0 +1,4 @@
+socop
+=====
+
+social opinion analizing
