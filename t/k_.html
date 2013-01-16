@@ -1,0 +1,71 @@
+<html>  
+  <head><title>jQuery+yahoo</title>  
+	<script type="text/javascript" src="./jQuery.js"></script>
+  <script type='text/javascript'>  
+    // Parses returned response and extracts  
+    // the title, links, and text of each news story. 
+function getObjects(obj, key, val) {
+    var objects = [];
+    for (var i in obj) {
+        if (!obj.hasOwnProperty(i)) continue;
+        if (typeof obj[i] == 'object') {
+            objects = objects.concat(getObjects(obj[i], key, val));
+        } else if (i == key && obj[key] == val) {
+            objects.push(obj);
+        }
+    }
+    return objects;
+}
+function done_(al)
+{
+	//alert(al);
+	var str = al.responseText;
+	
+	if( str != null && str.length > 1 ) // или > 0
+	{
+		str = str.substring(2, str.length - 2);
+	}
+	console.log(str);
+	var obj = $.parseJSON(str);
+	console.log(obj);
+	 var links = getObjects(obj, 'class', 'pdasnip');//NIGMA SEARCH//objects[0].a.href - out
+	// var links = getObjects(obj, 'class', 'vsc');//GOOGLE SEARCH//links[0].h3.a.href
+	return false;
+}
+    function xajax(str)
+			{
+				var xml_src = new String();
+				xml_src='http://query.yahooapis.com/v1/public/yql';
+				var dataString = str;
+				var kk =		$.ajax({
+					type:'GET',
+					data:dataString,
+					url:xml_src,
+					scriptCharset: "utf-8" ,
+					contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+					dataType:'json',
+					complete: done_
+					});
+				return true;
+			}
+    </script>  
+  </head>  
+<body>  
+  <div id='results'></div>  
+  <!--<script src='http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20rss%20where%20url%3D%22http%3A%2F%2Frss.news.yahoo.com%2Frss%2Ftopstories%22&format=json&callback=cbfunc'>
+  
+  </script>-->
+  
+  <script >
+ // var query = 'select * from html where url="http://www.google.ru/pda?q=android"'//GOOGLE SEARCH
+  var query = 'select * from html where url="http://pda.nigma.ru/?s=android"'//NIGMA SEARCH
+	//var query = 'select * from html where url="http://yandex.ru/yandsearch?text=iphone+5&lr=10742" and xpath="*"'
+  	//var query = 'select * from html where url="http://nigma.ru/?s=iphone" and xpath="*"'
+	//var url = 'http://query.yahooapis.com/v1/public/yql?q='+encodeURI(query)+'&format=xml&callback=callback';
+	var url = 'http://query.yahooapis.com/v1/public/yql?q='+encodeURI(query)+'&format=xml&callback=callback_';
+	//var script = document.createElement('script');
+	//script.src = url;
+	//document.body.appendChild(script);
+	xajax('q='+encodeURI(query)+'&format=json&callback=c');
+  </script>
+</body>  

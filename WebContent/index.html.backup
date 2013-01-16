@@ -1,0 +1,813 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+	<head>
+		<title>SearchEngine</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<noscript><meta http-equiv=refresh content="0; url=noJSindex.html"></noscript>
+
+		<link rel="stylesheet" href="./classes/reset.css" type="text/css">
+		<link rel="stylesheet" href="./classes/style.css" type="text/css">
+		<link rel="stylesheet" href="./classes/chart.css" type="text/css">
+		<!--[if IE]><link rel="stylesheet" href="./classes/ie6.css" type="text/css"><![endif]-->
+		<link rel="stylesheet" href="./classes/ajax.css" type="text/css">
+		<script type="text/javascript" src="./JS/jQuery.js"></script>
+		<script type="text/javascript" src="./JS/amcharts.js"></script>
+		<script type="text/javascript">
+		shown_pages = 0;
+		pages = 0;
+		max_pages = 11;
+		begin_T = 0;//it will be equal to pages++
+		length_T = 7;
+		max_T = max_pages;
+		max_IEpages = length_T + 4;
+		svg_chart = true;
+		IEdebug = false;
+		curP = 0;
+		show_=true;
+		function msieversion()
+		{
+			var ua = window.navigator.userAgent
+			var msie = ua.indexOf ("MSIE ")
+			if ( msie > 0 )      // If Internet Explorer, return version number
+			return parseInt (ua.substring (msie+5, ua.indexOf (".", msie )))
+			else	// If another browser, return 0
+			return 0
+		}
+		function svg_chart_toggle()
+		{
+			svg_chart = !svg_chart;
+			return svg_chart;
+		}
+		function pre_inverse()
+		{
+		if (svg_chart)
+			{
+				//$('#chartdiv')[0].className = "chart_svg vis";
+				//$('#chartdiv_percent')[0].className = "percentage_ inv";
+				//$('#mainChart')[0].className = "chart_ cHeightSVG";
+				//$('#msg__')[0].innerHTML = "Результаты поиска(SVG)";
+				$('#chartdiv').removeClass('inv').addClass('vis');
+				$('#chartdiv_percent').removeClass('vis').addClass('inv');
+				$('#mainChart').removeClass('cHeight').addClass('cHeightSVG');
+				$('#mainmessage>a').html("Результаты поиска(SVG)");
+				ready_chart();
+			}
+			else
+			{
+				//$('#chartdiv_percent')[0].className = "percentage_ vis";
+				//$('#chartdiv')[0].className = "chart_svg inv";
+				//$('#mainChart')[0].className = "chart_ cHeight";
+				//$('#msg__')[0].innerHTML = "Результаты поиска";
+				$('#chartdiv_percent').removeClass('inv').addClass('vis');
+				$('#chartdiv').removeClass('vis').addClass('inv');
+				$('#mainChart').removeClass('cHeightSVG').addClass('cHeight');
+				$('#mainmessage>a').html("Результаты поиска");
+			}
+			return false;
+		}
+		function inverse_show_chart()
+		{
+			if (!IEdebug) {return false;}
+			svg_chart_toggle();
+			pre_inverse();
+			return false;
+		}
+		function getDocumentHeight()
+		{
+		return (document.body.scrollHeight > document.body.offsetHeight)?document.body.scrollHeight:document.body.offsetHeight;
+		}
+		function getDocumentWidth()
+		{
+			return (document.body.scrollWidth > document.body.offsetWidth)?document.body.scrollWidth:document.body.offsetWidth;
+		}
+		function set_bold(t)
+		{
+			for (var i = 0; i < max_T; i++)
+			{
+				$("#pages_counter"+i).removeClass("current_max");
+			}
+			$("#pages_counter"+t).addClass("current_max");
+			
+			return false;
+		}
+		function just_show_page(t)
+		{
+			$("#l"+(t)).removeClass("inv");
+			$("#bw"+(t)).removeClass("inv");
+			$("#g"+(t)).removeClass("inv");
+			return false;
+		}
+		function show_page()//show pages after "more" button pressed and numbers.
+		{
+				$("#l"+(shown_pages)).removeClass("inv");
+				$("#bw"+(shown_pages)).removeClass("inv");
+				$("#g"+(shown_pages)).removeClass("inv");
+				set_bold(shown_pages);
+				shown_pages++;
+				
+				var pArray = array_pages(shown_pages ,length_T ,max_T);
+				
+					for(var i = 0; i<(shown_pages - 1);i++)//resets page number on the page
+						{
+							$(('#pages_counter'+i)).removeClass().addClass("page_num");
+						}
+					$('#pages_scroll>.page_').remove();
+
+					
+					if (pArray[1][0] > 1)
+					{
+						var a_link = document.createElement ('A');
+						$(a_link).addClass("page_link");
+						$(a_link).attr('href',("#p" + 0));
+						$(a_link).click(function(){on_click_page(parseInt($(this).attr('href').charAt(2) + $(this).attr('href').charAt(3)+ $(this).attr('href').charAt(4)));return false;});
+						//$(a_link).click(function (){on_click_page(0)});
+						$(a_link).empty().html(("" + 1));
+						
+						var div_link = document.createElement ('DIV');
+						$(div_link).addClass("page_");
+						$(div_link).append(a_link);
+						
+						$('#pages_scroll').append(div_link);
+					}
+					
+					if (pArray[1][0] > 2)
+					{
+						
+						var div_link = document.createElement ('DIV');
+						$(div_link).addClass("page_");
+						$(div_link).empty().html(("..."));
+						$('#pages_scroll').append(div_link);
+					}
+					
+					for(var i = 0; i<pArray[1].length;i++)
+					{
+						var a_link = document.createElement ('A');
+						$(a_link).addClass("page_link");
+						$(a_link).attr('href',("#p" + (pArray[1][i] - 1)));
+						//$(a_link).click(function (){on_click_page(pArray[1][i] - 1)});
+						$(a_link).click(function(){on_click_page(parseInt($(this).attr('href').charAt(2) + $(this).attr('href').charAt(3)+ $(this).attr('href').charAt(4)));return false;});
+						$(a_link).empty().html(("" + (pArray[1][i])));
+						
+						var div_link = document.createElement ('DIV');
+						if (i != pArray[0]) {$(div_link).removeClass().addClass("page_");}
+						else
+						{
+							$(div_link).removeClass().addClass("page_ current_");
+						}
+						if (i > pArray[0])
+						{//new objects
+							if (pages <  pArray[1][(i + 0)])
+							{
+							//alert('p: '+ pages +',s: ' + shown_pages +',i: ' + i); 
+							$(a_link).click(function()
+							{
+								var cur__ = parseInt($(this).attr('href').charAt(2) + $(this).attr('href').charAt(3)+ $(this).attr('href').charAt(4));
+								//alert("show_page[NEW] " + "cur__" + cur__ +' pages: '+ pages +',shown_pages: ' + shown_pages);
+								for (var p = shown_pages; p <Math.min(cur__ + 1,pages);p++)
+								{
+									show_page();
+								}
+								for (var p = Math.min(cur__ + 1,pages); p <Math.max(cur__ + 1,pages);p++)
+								{
+									xajax(p,1);
+								}
+								return false;
+							});
+							
+								//$(a_link).click(function(){var cur__ = parseInt($(this).attr('href').charAt(2) + $(this).attr('href').charAt(3)+ $(this).attr('href').charAt(4)); xajax(cur__,(cur__ - shown_pages + 2));return false;});
+							}
+							else//was opened. hidden objects
+							{//alert('!p: '+ pages +',s: ' + shown_pages +',i: ' + i);
+							$(a_link).click(function(){var cur__ = parseInt($(this).attr('href').charAt(2) + $(this).attr('href').charAt(3)+ $(this).attr('href').charAt(4));
+							//alert("show_page[OLD] " + "cur__" + cur__ +' pages: '+ pages +',shown_pages: ' + shown_pages);
+							for (var p = shown_pages; p <(cur__ + 1);p++)
+							{
+								show_page();
+							}
+							return false;
+							});
+								//show_hidden(t);
+								//$(a_link).click(function(){on_click_page(parseInt($(this).attr('href').charAt(2) + $(this).attr('href').charAt(3)+ $(this).attr('href').charAt(4)));return false;});
+							}
+						}
+						else
+						{
+							$(a_link).click(function(){on_click_page(parseInt($(this).attr('href').charAt(2) + $(this).attr('href').charAt(3)+ $(this).attr('href').charAt(4)));return false;});
+						}
+						$(div_link).append(a_link);
+						
+						$('#pages_scroll').append(div_link);
+					}
+					
+					if (pArray[1][pArray[1].length - 1] < (max_T - 1))
+					{
+						var div_link = document.createElement ('DIV');
+						$(div_link).addClass("page_");
+						$(div_link).empty().html(("..."));
+						$('#pages_scroll').append(div_link);
+					}
+					if (pArray[1][pArray[1].length - 1] < max_T)
+					{
+						var a_link = document.createElement ('A');
+						$(a_link).addClass("page_link_last");
+						$(a_link).attr('href',(""));
+						//$(a_link).attr('href',("#p" + (max_T - 1)));
+						$(a_link).click(function(){on_click_page(parseInt($(this).attr('href').charAt(2) + $(this).attr('href').charAt(3)+ $(this).attr('href').charAt(4)));return false;});
+						//$(a_link).click(on_click_page(max_T - 1));
+						//$(a_link).click(function(){alert('!');return false;});
+						$(a_link).empty().html(("[&rarr; " + max_T + " ]"));
+						
+						var div_link = document.createElement ('DIV');
+						$(div_link).addClass("page_");
+						$(div_link).append(a_link);
+						$('#pages_scroll').append(div_link);
+					}
+					
+				
+			return false;
+		}
+		function scroll_to_bottom(speed)
+		{
+			var height= getDocumentHeight();
+			//$("html,body").attr("scrollTop",height);
+			$("html,body").animate({"scrollTop":height},speed); 
+		}
+		function on_click_page(t)
+		{
+			//alert(t);
+			if ($("#p"+t).offset() != null)
+			{
+				//set_bold(t);
+				//alert(t);
+				$("html,body").scrollTop($("#p"+t).offset().top);
+			}
+			return $("html,body").scrollTop();
+		}
+		function array_pages(begin_ ,length_ ,max_)
+		{
+			var ar_out = new Array();
+			var t_ar = new Array();
+			var current_ = 1;//1-based array
+			var delta_ = Math.floor(length_/2);
+			var zero_ = begin_ - delta_;
+			var max_gain = begin_ + delta_;
+			if ((length_%2) == 0) { max_gain-=1}
+			var min_ar = Math.max(zero_,1);
+			var max_ar = Math.min(max_,max_gain);
+			
+			for (var i = min_ar; i<=max_ar;i++)
+			{
+				t_ar.push(i);
+				if (i==begin_) {current_ = t_ar.length;}
+			}
+			ar_out[0] = current_ - 1;
+			ar_out[1] = t_ar;
+			//alert (t_ar.length);
+			return ar_out;
+		}
+		function Scroll_back(t)//hides lots of pages
+		{
+		//alert(t);
+			for (var i = (t + 1); i < pages; i++)
+			{
+				$("#l"+i).addClass("inv");
+				$("#bw"+i).addClass("inv");
+				$("#g"+i).addClass("inv");
+			}
+			shown_pages = t + 1;
+			var pArray = array_pages(shown_pages ,length_T ,max_T);
+			
+					for(var i = 0; i<(shown_pages - 1);i++)//resets page number on the page
+					{
+						$(('#pages_counter'+i)).removeClass().addClass("page_num");
+					}
+					$('#pages_scroll>.page_').remove();
+
+					
+					if (pArray[1][0] > 1)
+					{
+						var a_link = document.createElement ('A');
+						$(a_link).addClass("page_link");
+						$(a_link).attr('href',("#p" + 0));
+						$(a_link).click(function(){on_click_page(parseInt($(this).attr('href').charAt(2) + $(this).attr('href').charAt(3)+ $(this).attr('href').charAt(4)));return false;});
+						//$(a_link).click(function (){on_click_page(0)});
+						$(a_link).empty().html(("" + 1));
+						
+						var div_link = document.createElement ('DIV');
+						$(div_link).addClass("page_");
+						$(div_link).append(a_link);
+						
+						$('#pages_scroll').append(div_link);
+					}
+					
+					if (pArray[1][0] > 2)
+					{
+						
+						var div_link = document.createElement ('DIV');
+						$(div_link).addClass("page_");
+						$(div_link).empty().html(("..."));
+						$('#pages_scroll').append(div_link);
+					}
+					
+					for(var i = 0; i<pArray[1].length;i++)
+					{
+						var a_link = document.createElement ('A');
+						$(a_link).addClass("page_link");
+						$(a_link).attr('href',("#p" + (pArray[1][i] - 1)));
+						//$(a_link).click(function (){on_click_page(pArray[1][i] - 1)});
+						$(a_link).click(function(){on_click_page(parseInt($(this).attr('href').charAt(2) + $(this).attr('href').charAt(3)+ $(this).attr('href').charAt(4)));return false;});
+						$(a_link).empty().html(("" + (pArray[1][i])));
+						
+						var div_link = document.createElement ('DIV');
+						if (i != pArray[0]) {$(div_link).removeClass().addClass("page_");}
+						else
+						{
+							$(div_link).removeClass().addClass("page_ current_");
+						}
+						if (i > pArray[0])
+						{
+
+							if (pages < pArray[1][(i + 0)])
+							{
+							//alert('p: '+ pages +',s: ' + shown_pages +',i: ' + i); 
+							$(a_link).click(function()
+							{
+								var cur__ = parseInt($(this).attr('href').charAt(2) + $(this).attr('href').charAt(3)+ $(this).attr('href').charAt(4));
+								//alert("Scroll[NEW] " + "cur__" + cur__ +' pages: '+ pages +',shown_pages: ' + shown_pages);
+								for (var p = shown_pages; p <Math.min(cur__ + 1,pages);p++)
+								{
+									show_page();
+								}
+								for (var p = Math.min(cur__ + 1,pages); p <Math.max(cur__ + 1,pages);p++)
+								{
+									xajax(p,1);
+								}
+								return false;
+							});
+							
+								//$(a_link).click(function(){var cur__ = parseInt($(this).attr('href').charAt(2) + $(this).attr('href').charAt(3)+ $(this).attr('href').charAt(4)); xajax(cur__,(cur__ - shown_pages + 2));return false;});
+							}
+							else//was opened. hidden objects
+							{//alert('!p: '+ pages +',s: ' + shown_pages +',i: ' + i);
+							$(a_link).click(function(){var cur__ = parseInt($(this).attr('href').charAt(2) + $(this).attr('href').charAt(3)+ $(this).attr('href').charAt(4));
+							//alert("Scroll[OLD] " + "cur__" + cur__ +' pages: '+ pages +',shown_pages: ' + shown_pages);
+							for (var p = shown_pages; p <(cur__ + 1);p++)
+							{
+								show_page();
+							}
+							return false;
+							});
+								//show_hidden(t);
+								//$(a_link).click(function(){on_click_page(parseInt($(this).attr('href').charAt(2) + $(this).attr('href').charAt(3)+ $(this).attr('href').charAt(4)));return false;});
+							}
+						}
+						else
+						{
+							$(a_link).click(function(){on_click_page(parseInt($(this).attr('href').charAt(2) + $(this).attr('href').charAt(3)+ $(this).attr('href').charAt(4)));return false;});
+						}
+						$(div_link).append(a_link);
+						
+						$('#pages_scroll').append(div_link);
+					}
+					
+					if (pArray[1][pArray[1].length - 1] < (max_T - 1))
+					{
+						var div_link = document.createElement ('DIV');
+						$(div_link).addClass("page_");
+						$(div_link).empty().html(("..."));
+						$('#pages_scroll').append(div_link);
+					}
+					if (pArray[1][pArray[1].length - 1] < max_T)
+					{
+						var a_link = document.createElement ('A');
+						$(a_link).addClass("page_link_last");
+						$(a_link).attr('href',(""));
+						//$(a_link).attr('href',("#p" + (max_T - 1)));
+						$(a_link).click(function(){on_click_page(parseInt($(this).attr('href').charAt(2) + $(this).attr('href').charAt(3)+ $(this).attr('href').charAt(4)));return false;});
+						//$(a_link).click(on_click_page(max_T - 1));
+						//$(a_link).click(function(){alert('!');return false;});
+						$(a_link).empty().html(("[&rarr; " + max_T + " ]"));
+						
+						var div_link = document.createElement ('DIV');
+						$(div_link).addClass("page_");
+						$(div_link).append(a_link);
+						$('#pages_scroll').append(div_link);
+					}
+					
+					
+					
+			return false;
+		}
+		function parseXMLdiv(xml)
+					{
+					var toptagXML = 0;
+					if (msieversion() != 0) {toptagXML = 1;}
+					if (max_pages == 0)
+					{
+						$('#mainmessage>a').empty().html("Нет результатов");
+						
+						//$('#msg__')[0].innerHTML = "Нет результатов";
+						return true;
+					}
+					pre_inverse();
+					/*if (!svg_chart)
+					{
+						$('#mainmessage>a').empty().html("Результаты поиска");
+					}
+					else
+					{
+						$('#mainmessage>a').empty().html("Результаты поиска (SVG)");
+					}		*/	
+					var div_cells = new Array();
+					var jj = 0;
+					var break_ = 1;
+					for(var j=0;j<xml.childNodes[toptagXML].childNodes.length; j++)
+					{
+					if ((xml.childNodes[toptagXML].childNodes[j].nodeName)=="#text") {continue;}
+					//	alert(xml.childNodes[toptagXML].childNodes[j]);
+					jj++;
+					if (jj>break_) {break;}
+					var ii = 0;
+						for(var i=0;i<xml.childNodes[toptagXML].childNodes[j].childNodes.length; i++)
+							{
+							if ((xml.childNodes[toptagXML].childNodes[j].childNodes[i].nodeName)=="#text") {continue;}
+							ii+=1;
+								var a_top = document.createElement ('A');
+								$(a_top).attr('href',xml.childNodes[toptagXML].childNodes[j].childNodes[i].attributes[1].value);
+								$(a_top).addClass("link_head");
+								$(a_top).empty().html(xml.childNodes[toptagXML].childNodes[j].childNodes[i].attributes[3].value);
+								
+
+								
+								var div_a_top = document.createElement ('DIV');
+								if (ii<3) {$(div_a_top).addClass("bad_cell_in");}
+								else {$(div_a_top).addClass("good_cell_in");}
+								$(div_a_top).append(a_top);
+							
+
+								
+								
+								var a_bot = document.createElement ('A');
+								$(a_bot).attr('href',xml.childNodes[toptagXML].childNodes[j].childNodes[i].attributes[1].value);
+								$(a_bot).addClass("link_block");
+								$(a_bot).empty().html(xml.childNodes[toptagXML].childNodes[j].childNodes[i].attributes[2].value);
+								
+
+								
+								var div_a_bot = document.createElement ('DIV');
+								$(div_a_bot).append(a_bot);
+								$(div_a_bot).addClass("cell_link");
+							
+
+								
+								
+								var div_cell = document.createElement ('DIV');
+								if (ii<3) {$(div_cell).addClass("bad_cell");}
+								else {$(div_cell).addClass("good_cell");}
+								
+								$(div_cell).append(div_a_top);
+								$(div_cell).append(div_a_bot);
+								
+								div_cells.push(div_cell);
+								
+								
+							}
+					
+					var div_bad_line = document.createElement ('DIV');
+					$(div_bad_line).addClass("bad_line");
+					$(div_bad_line).append(div_cells[0]);
+					$(div_bad_line).append(div_cells[1]);
+
+					
+					var div_good_line = document.createElement ('DIV');
+					$(div_good_line).addClass("good_line");
+					$(div_good_line).append(div_cells[2]);
+					$(div_good_line).append(div_cells[3]);
+
+					
+					var a_page_num = document.createElement ('A');
+					$(a_page_num).attr('name','p'+ (pages));
+					$(a_page_num).attr('id','p'+ (pages));
+					$(a_page_num).empty().html(pages + 1);
+					$(a_page_num).click(function(){set_bold(parseInt($(this).attr('id').charAt(1) + $(this).attr('id').charAt(2)+ $(this).attr('id').charAt(3)));Scroll_back(parseInt($(this).attr('id').charAt(1) + $(this).attr('id').charAt(2)+ $(this).attr('id').charAt(3)));return false;});
+
+					
+					var div_page_num = document.createElement ('DIV');
+					$(div_page_num).addClass("page_num current_max");
+					$(div_page_num).attr('id','pages_counter'+pages);
+					$(div_page_num).append(a_page_num);
+					pages++;curP = pages;shown_pages = pages;
+
+					
+					var div_bad = document.createElement ('DIV');
+					$(div_bad).addClass("bad_");
+					$(div_bad).append(div_bad_line);
+
+					var div_good = document.createElement ('DIV');
+					$(div_good).addClass("good_");
+					$(div_good).append(div_good_line);
+
+					
+					var div_lane = document.createElement ('DIV');
+
+					$(div_lane).addClass("lane");
+					$(div_lane).attr('id','l'+ (pages - 1));
+					$(div_lane).append(div_page_num);
+					$(div_lane).append(div_bad);
+					$(div_lane).append(div_good);
+
+					
+					var div_btw = document.createElement ('DIV');
+					$(div_btw).attr('id','bw'+ (pages - 1));
+					$(div_btw).addClass("between_lane");
+
+					
+					var div_gap = document.createElement ('DIV');
+					$(div_gap).attr('id','g'+ (pages - 1));
+					$(div_gap).addClass("gap_");
+
+					
+					$('#button_load').before(div_lane);
+					$('#button_load').before(div_btw);
+					$('#button_load').before(div_gap);
+					$('.results_wrapper').removeClass().addClass("results_wrapper vis");
+					$('#results').removeClass().addClass("results_wrapper vis");
+					
+					
+					$('#pages_scroll').removeClass().addClass("pages_ vis");
+					var pArray = array_pages(pages ,length_T ,max_T);
+					IEdebug = true;
+					if (true)//(msieversion() == 0)//if no IE
+					{
+						for(var i = 0; i<(pages - 1);i++)//resets page number on the page
+						{
+							$(('#pages_counter'+i)).removeClass().addClass("page_num");
+						}
+					$('#pages_scroll>.page_').remove();
+
+					
+					if (pArray[1][0] > 1)
+					{
+						var a_link = document.createElement ('A');
+						$(a_link).addClass("page_link");
+						$(a_link).attr('href',("#p" + 0));
+						$(a_link).click(function(){on_click_page(parseInt($(this).attr('href').charAt(2) + $(this).attr('href').charAt(3)+ $(this).attr('href').charAt(4)));return false;});
+						//$(a_link).click(function (){on_click_page(0)});
+						$(a_link).empty().html(("" + 1));
+						
+						var div_link = document.createElement ('DIV');
+						$(div_link).addClass("page_");
+						$(div_link).append(a_link);
+						
+						$('#pages_scroll').append(div_link);
+					}
+					
+					if (pArray[1][0] > 2)
+					{
+						
+						var div_link = document.createElement ('DIV');
+						$(div_link).addClass("page_");
+						$(div_link).empty().html(("..."));
+						$('#pages_scroll').append(div_link);
+					}
+					
+					for(var i = 0; i<pArray[1].length;i++)
+					{
+						var a_link = document.createElement ('A');
+						$(a_link).addClass("page_link");
+						$(a_link).attr('href',("#p" + (pArray[1][i] - 1)));
+						//$(a_link).click(function (){on_click_page(pArray[1][i] - 1)});
+						$(a_link).click(function(){on_click_page(parseInt($(this).attr('href').charAt(2) + $(this).attr('href').charAt(3)+ $(this).attr('href').charAt(4)));return false;});
+						$(a_link).empty().html(("" + (pArray[1][i])));
+						
+						var div_link = document.createElement ('DIV');
+						if (i != pArray[0]) {$(div_link).removeClass().addClass("page_");}
+						else
+						{
+							$(div_link).removeClass().addClass("page_ current_");
+						}
+						if (i > pArray[0])
+						{
+							
+							$(a_link).click(function(){var cur__ = parseInt($(this).attr('href').charAt(2) + $(this).attr('href').charAt(3)+ $(this).attr('href').charAt(4));// alert(cur__ + " " + (cur__ - pages + 1));
+							//xajax(cur__,(cur__ - pages + 2));
+							for (var p = 0; p < (cur__ - pages + 1);p++)
+							{
+								//xajax(cur__ ,(cur__ + p));
+								xajax(cur__ ,(p+1));
+							}
+							return false;});
+						}
+						else
+						{
+							$(a_link).click(function(){on_click_page(parseInt($(this).attr('href').charAt(2) + $(this).attr('href').charAt(3)+ $(this).attr('href').charAt(4)));return false;});
+						}
+						$(div_link).append(a_link);
+						
+						$('#pages_scroll').append(div_link);
+					}
+					
+					if (pArray[1][pArray[1].length - 1] < (max_T - 1))
+					{
+						var div_link = document.createElement ('DIV');
+						$(div_link).addClass("page_");
+						$(div_link).empty().html(("..."));
+						$('#pages_scroll').append(div_link);
+					}
+					if (pArray[1][pArray[1].length - 1] < max_T)
+					{
+						var a_link = document.createElement ('A');
+						$(a_link).addClass("page_link_last");
+						$(a_link).attr('href',(""));
+						//$(a_link).attr('href',("#p" + (max_T - 1)));
+						$(a_link).click(function(){on_click_page(parseInt($(this).attr('href').charAt(2) + $(this).attr('href').charAt(3)+ $(this).attr('href').charAt(4)));return false;});
+						//$(a_link).click(on_click_page(max_T - 1));
+						//$(a_link).click(function(){alert('!');return false;});
+						$(a_link).empty().html(("[&rarr; " + max_T + " ]"));
+						
+						var div_link = document.createElement ('DIV');
+						$(div_link).addClass("page_");
+						$(div_link).append(a_link);
+						$('#pages_scroll').append(div_link);
+					}
+					
+					}
+						
+					$('#pages_scroll').removeClass().addClass("pages_ vis");
+					}
+					$('.link_block_button').removeClass('inv').addClass("vis");
+					$('#loader').removeClass().addClass("load_img inv");
+					$('#pages_scroll').removeClass('inv').addClass("vis");
+					}
+	
+			function xajax(page__,length__)
+			{//page__ = 0;
+			//alert(page__)
+				//$("#loader")[0].className='load_img vis';
+				$('.results_wrapper').removeClass('inv').addClass("vis");
+				$('#results').removeClass('inv').addClass("vis");
+				$('.link_block_button').removeClass('vis').addClass("inv");
+				$('#loader').removeClass().addClass("load_img vis");
+				$('#pages_scroll').removeClass('vis').addClass("inv");z
+				var xml_src = new String();
+				xml_src='search.do';
+				var dataString = 'text='+ $('#txt').val() + '&page=' + page__ +'&length=' + length__;
+				if ((pages < max_pages))
+				{
+					$.ajax({
+					type:'GET',
+					data:dataString,
+					url:xml_src,
+					scriptCharset: "utf-8" ,
+					contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+					dataType:'xml',
+					success: parseXMLdiv
+					});
+				}
+				//$("#loader")[0].className='load_img inv';
+				//$('#loader').removeClass().addClass("load_img inv");
+				return true;
+			}
+			function ajaxsearch(page__,length__)
+			{//alert(page__)
+			
+				//$("#loader")[0].className='load_img vis';
+				$('.results_wrapper').removeClass('inv').addClass("vis");
+				$('#results').removeClass('inv').addClass("vis");
+				$('.link_block_button').removeClass('vis').addClass("inv");
+				$('#loader').removeClass().addClass("load_img vis");
+				$('#pages_scroll').removeClass('vis').addClass("inv");
+				var xml_src = new String();
+				var dataString = 'text='+ $('#txt').val() + '&page=' + page__ +'&length=' + length__;//+ '&email=' + email + '&phone=' + phone;
+				xml_src='search.do';
+				if ((pages < max_pages)||(pages==0))
+				{
+					$.ajax({
+					type:'GET',
+					data:dataString,
+					url:xml_src,
+					scriptCharset: "utf-8" ,
+					contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+					dataType:'xml',
+					success: parseXMLdiv
+					});
+				}
+				//inverse_show_chart();
+				//$("#loader")[0].className='load_img inv';
+				//$('#loader').removeClass().addClass("load_img inv");
+				return true;
+			}
+		</script>
+		<script type="text/javascript">
+            var chart;
+            var legend;
+
+            var chartData = [{
+                says: "Хорошо",
+                value: 60
+            }, {
+                says: "Плохо",
+                value: 30
+            }, {
+                says: "Нейтрально",
+                value: 10
+            }];
+
+            function ready_chart() {
+                // PIE CHART
+                chart = new AmCharts.AmPieChart();
+                chart.dataProvider = chartData;
+                chart.titleField = "says";
+                chart.valueField = "value";
+                chart.outlineColor = "#FFFFFF";
+                chart.outlineAlpha = 0.8;
+                chart.outlineThickness = 2;
+				//chart.color="#FFFFFF";
+				chart.colors = 	["#04D215", "#FF0F00", "#0D52D1"];
+                // this makes the chart 3D
+                chart.depth3D = 15;
+                chart.angle = 25;
+
+                // WRITE
+                chart.write("chartdiv");
+            };
+        </script>
+	</head>
+	<body>
+	<script type="text/javascript">
+	var ver = msieversion();
+	if ((ver != 0)&&(ver < 6))
+	{
+		location="noJSindex.html" 
+	}
+	</script>
+	<div><a name="top"></a></div>
+	<div class="page">
+	<div class="wrapper">
+		<div class="main_head">
+			<div class="main_top" >
+				<div class="main_text"><h1>Just search it!</h1></div>
+				<div class="search_">
+					<form method="get" action="" class="input" onsubmit="ajaxsearch(pages,1);return false;">
+					<div class="logo_"></div>
+					<div class="in_form">
+						<input type=text name="text" size=18 value="" maxlength=120 class="text_field" id="txt">
+						<input type=submit value="Искать!" class="button_field" onClick="ajaxsearch(pages,1);return false;">
+					</div>
+					</form>
+				</div>
+			</div>
+		</div>
+		<div class="main">
+		
+			<div id="mainChart" class="chart_ cHeight">
+				<div class="chart_text" id="mainmessage">
+				<a href="javascript.void(0);" onclick="inverse_show_chart();return false;" class="chart_text_a" id="msg__">Введите запрос</a>
+				</div>
+			
+				<div id="chartdiv_percent" class="percentage_ inv">
+				<div class="bad_percent">
+					<p class="proc_p">35%</p>
+				</div>
+				<div class="good_percent">
+					<p class="proc_p">65%</p>
+				</div>
+				</div>
+					<div id="chartdiv" class="chart_svg inv"></div>
+			</div>
+			<div class="chart_shadow"></div>
+			<div class="gap_"></div>
+			<div class="gap_"></div>
+			<div class="results_wrapper inv ">
+				<div class="results" id="results">
+				<div class="between_lane"></div>
+				<div class="gap_"></div>
+				<div class="more_results" id="button_load">
+				<div class="more_results_link">
+					<a href="javascript.void(0);" class="link_block_button" onclick="if (pages>shown_pages) {show_page();} else {pages = shown_pages; xajax(pages,1);} return false;" id="msg">
+						<img src="./images/more.png" class="more_img" alt="Ещё!">
+					</a>
+					<img id="loader" src="./images/loading.gif" class="load_img inv" alt="Загрузка...">
+				</div>
+			</div>
+				</div>
+			</div>
+			<div class="pages_ inv div_h0" id="pages_scroll">
+				
+
+			</div>
+		</div>
+		<div><a name="bottom"></a></div>
+	</div>
+	</div>
+		<div class="footer">
+			<div class="footer_links"><a href="./index.html" class="footer_link">Домой</a></div>
+			<div class="footer_links"><a href="./index.html" class="footer_link">index.html</a></div>
+			<div class="footer_links"><a href="./noJSindex.html" class="footer_link">noJSindex</a></div>
+			<div class="footer_links"><a href="./results.html" class="footer_link">results.html</a></div>
+			<div class="footer_links"><a href="./noJSresults.html" class="footer_link">noJSresults.html</a></div>
+			<div class="subfooter"><div class="subfooter_text">Петрухин, Миронов, 2012</div></div>
+		</div>
+		<div class="left_button"><a href="#top" class="scrollLink">&uarr; Наверх</a><a href="#bottom" class="scrollLink">&darr; Вниз</a></div>
+	</body>
+</html>

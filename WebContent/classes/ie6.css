@@ -1,0 +1,73 @@
+body
+{
+}
+.logo_
+{
+	background: url(../images/Search_20.gif);
+}
+.good_cell
+{
+	background-image: url(../images/cell_green.gif);
+}
+.bad_cell
+{
+	background-image: url(../images/cell_red.gif);
+}
+form 
+{
+	color: #111;
+	height:25;
+	position:relative;
+	top:0;
+	left:-50%;
+	width:490;
+	height:25;
+}
+ form input[type=text], form input[type=password]
+ {
+	border: 1px solid #050505;
+	padding:0;
+	width:350;
+	height: 25px;
+}
+ form .formText
+ {
+	border: 1px solid #050505;
+	padding:0;
+	width:350;
+	height: 25px;
+}
+ form input[type=submit]
+ {
+	border: 2px solid #050505;
+ 	padding:0;
+	width:100px;
+	height:25px;
+	cursor: pointer;
+}
+ form .formSubmit
+ {
+	border: 2px solid #050505;
+ 	padding:0;
+	width:100px;
+	height:25px;
+	cursor: pointer;
+	width: auto;
+}
+.left_button
+{
+	_position:absolute;
+	_top:expression((eval(0.5*(document.body.offsetHeight)) + (eval(document.body.scrollTop ))) + 'px' );
+	text-align:center;
+	height:0px;
+	font-size:0px;
+}
+ * html input
+ {
+ z-index: expression(
+ runtimeStyle.zIndex = 1,
+ type == "text" ? (className += " formText") : 0, 
+ type == "password" ? (className += " formText") : 0,
+ type == "submit" ? (className += " formSubmit") : 0 
+ )
+}

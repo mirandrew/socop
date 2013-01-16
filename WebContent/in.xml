@@ -1,0 +1,10 @@
+
+<op amount="2" maxPages="10"goodpc="35" badpc="65">
+	<cell>
+		<com empty="false"  type="bad"  short="aa!" long="Ipsum dol consectetuer adipiscing elit." link="http://ya.ru"/>
+		<com empty="false"  type="bad"  short="bb" long="Suspendisse quam sem, consequat at, commodo vitae," link="http://google.ru"/>
+		<com empty="false"  type="good" short="cc!" long="Ipsum dol consectetuer adipiscing elit." link="http://bing.ru"/>
+		<com empty="false"  type="good" short="dd!" long="Suspendisse quam sem, consequat at, commodo vitae," link="http://www.cdezign.ru/"/>
+	</cell>
+</op>
+

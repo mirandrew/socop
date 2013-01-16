@@ -1,0 +1,26 @@
+.bad_percent
+{
+	float:left;
+	position:relative;
+	left:50%;
+	background-color:#FF0F00;
+	background-image:url(../images/good_percentage.png);
+	background-position: left top;
+    background-repeat: repeat-x;
+	text-align: center;
+	font-size:21px;
+	height:21;
+}
+.good_percent
+{
+	float:right;
+	position:relative;
+	left:50%;
+	background-image:url(../images/bad_percentage.png);
+	background-position: left top;
+    background-repeat: repeat-x;
+	text-align: center;
+	background-color:#04D215;
+	font-size:21px;
+	height:21;
+}

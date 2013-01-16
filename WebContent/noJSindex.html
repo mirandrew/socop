@@ -1,0 +1,70 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+	<head>
+		<title>SearchEngine</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+		<META name="description" content="Все о создании html страниц" >
+		<META name="keywords" content="html страница">
+		<link rel="stylesheet" href="./classes/reset.css" type="text/css">
+		<link rel="stylesheet" href="./classes/style.css" type="text/css">
+		<link rel="stylesheet" href="./classes/chart.css" type="text/css">
+		<!--[if IE]><link rel="stylesheet" href="./classes/ie6.css" type="text/css"><![endif]-->
+	</head>
+	<body>
+	<script language="JavaScript" type="text/javascript">
+	<!--
+	function msieversion()
+	{
+		var ua = window.navigator.userAgent
+		var msie = ua.indexOf ("MSIE ")
+		if ( msie > 0 )      // If Internet Explorer, return version number
+		return parseInt (ua.substring (msie+5, ua.indexOf (".", msie )))
+		else	// If another browser, return 0
+		return 0
+	}
+	var ver = msieversion();
+	if ((ver == 0)||(ver > 5))
+	{
+		location="index.html" 
+	}
+	//--> 
+	</script>
+	<div class="page">
+	<div class="wrapper">
+		<div class="main_head">
+			<div class="main_top" >
+				<div class="main_text"><h1>Just search it!</h1></div>
+				<div class="search_">
+					<form method="get" action="results.html" class="input">
+					<div class="logo_"></div>
+					<div class="in_form">
+						<input type=text name="text" size=18 value="" maxlength=120 class="text_field">
+						<input type=submit value="Искать!" class="button_field">
+					</div>
+					</form>
+				</div>
+			</div>
+			<div class="header_noscript"><div class="header_noscript_message">Включите JavaScript</div></div>
+		</div>
+		<div class="main">
+			<div class="chart_">
+			<div class="chart_text">
+			Введите запрос
+			</div>
+			</div>
+			<div class="chart_shadow"></div>
+			<div class="gap_"></div>
+			
+		</div>
+	</div>
+	</div>
+		<div class="footer">
+			<div class="footer_links"><a href="./index.html" class="footer_link">Домой</a></div>
+			<div class="footer_links"><a href="./index.html" class="footer_link">index.html</a></div>
+			<div class="footer_links"><a href="./noJSindex.html" class="footer_link">noJSindex</a></div>
+			<div class="footer_links"><a href="./results.html" class="footer_link">results.html</a></div>
+			<div class="footer_links"><a href="./noJSresults.html" class="footer_link">noJSresults.html</a></div>
+			<div class="subfooter"><div class="subfooter_text">Петрухин, Миронов, 2012</div></div>
+		</div>
+	</body>
+</html>

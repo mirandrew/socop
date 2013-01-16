@@ -1,0 +1,28 @@
+.vis
+{
+	visibility:visible;
+}
+.inv
+{
+	visibility:hidden;
+	display:none;
+}
+.div_h0
+{
+	height:0px;
+}
+.current_max
+{
+	font-weight:900;
+	color:#303030;
+}
+.current_
+{
+	font-weight:700;
+	color:#101010;
+}
+.inv_
+{
+	visibility:hidden;
+	display:none;
+}

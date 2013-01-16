@@ -1,0 +1,75 @@
+				if (false) //else //if IE
+					{
+					var IE_pages_debug = new Array;
+					var IE_pages_debug_current = 0;
+							if (pArray[1][0] > 1)
+								{
+									IE_pages_debug.push((1));
+								}
+							
+							if (pArray[1][0] > 2)
+								{
+									IE_pages_debug.push(("..."));
+								}
+							
+							for(var i = 0; i<pArray[1].length;i++)
+							{
+								IE_pages_debug.push((pArray[1][i]));
+								if (i == pArray[0])
+								{
+									IE_pages_debug_current = (IE_pages_debug.length) - 1;
+								}
+							}
+							
+							if (pArray[1][pArray[1].length - 1] < (max_T - 1))
+							{
+								IE_pages_debug.push(("..."));
+							}
+							if (pArray[1][pArray[1].length - 1] < max_T)
+							{
+								IE_pages_debug.push((max_T));
+							}
+			
+					
+						for (var ii = 0; ii<max_IEpages;ii++)
+						{
+							//alert(IE_pages_debug[ii]);
+							if (ii<IE_pages_debug.length)
+							{
+								if (ii != "...")
+								{
+									$("#pIE"+ii+"a")[0].innerHTML = ("" + IE_pages_debug[ii]);
+									$("#pIE"+ii+"a")[0].className = "page_link";
+									$("#pIE"+ii+"a")[0].onclick = function(){alert('!');return false;}
+									$("#pIE"+ii+"a")[0].href = "#p" + (IE_pages_debug[ii] - 1);
+									if (ii == IE_pages_debug_current)
+									{
+										$("#pIE"+ii)[0].className = "page_ current_";
+									}
+									else
+									{
+										$("#pIE"+ii)[0].className = "page_";
+									}
+								}
+								else
+								{
+									$("#pIE"+ii+"a")[0].className = "page_link";
+									$("#pIE"+ii+"a")[0].innerHTML = "...";
+									$("#pIE"+ii+"a")[0].href = "";
+								}
+							}
+						}
+					}
+				
+				
+				<!--[if IE]><div class="page_" id="pIE0"><a class="page_link" href="#p0" id="pIE0a" onclick="alert('!');return false;">0</a></div><![endif]-->
+				<!--[if IE]><div class="page_" id="pIE1"><a class="page_link" href="#p0" id="pIE1a" onclick="alert('!');return false;">0</a></div><![endif]-->
+				<!--[if IE]><div class="page_" id="pIE2"><a class="page_link" href="#p0" id="pIE2a" onclick="alert('!');return false;">0</a></div><![endif]-->
+				<!--[if IE]><div class="page_" id="pIE3"><a class="page_link" href="#p0" id="pIE3a" onclick="alert('!');return false;">0</a></div><![endif]-->
+				<!--[if IE]><div class="page_" id="pIE4"><a class="page_link" href="#p0" id="pIE4a" onclick="alert('!');return false;">0</a></div><![endif]-->
+				<!--[if IE]><div class="page_" id="pIE5"><a class="page_link" href="#p0" id="pIE5a" onclick="alert('!');return false;">0</a></div><![endif]-->
+				<!--[if IE]><div class="page_" id="pIE6"><a class="page_link" href="#p0" id="pIE6a" onclick="alert('!');return false;">0</a></div><![endif]-->
+				<!--[if IE]><div class="page_" id="pIE7"><a class="page_link" href="#p0" id="pIE7a" onclick="alert('!');return false;">0</a></div><![endif]-->
+				<!--[if IE]><div class="page_" id="pIE8"><a class="page_link" href="#p0" id="pIE8a" onclick="alert('!');return false;">0</a></div><![endif]-->
+				<!--[if IE]><div class="page_" id="pIE9"><a class="page_link" href="#p0" id="pIE9a" onclick="alert('!');return false;">0</a></div><![endif]-->
+				<!--[if IE]><div class="page_" id="pIE10"><a class="page_link" href="#p0" id="pIE10a" onclick="alert('!');return false;">0</a></div><![endif]-->

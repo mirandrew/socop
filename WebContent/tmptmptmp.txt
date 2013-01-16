@@ -1,0 +1,10 @@
+for (var p = shown_pages; p <=cur__;p++)
+							{
+								just_show_page(p);
+								var pArray = array_pages(p ,length_T ,max_T);
+								for(var i = 0; i<(p - 1);i++)//resets page number on the page
+								{
+									$(('#pages_counter'+i)).removeClass().addClass("page_num");
+								}
+								$('#pages_scroll>.page_').remove();
+							}

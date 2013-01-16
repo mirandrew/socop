@@ -1,0 +1,47 @@
+<html>
+<head>
+<script type="text/javascript" src="./JS/jQuery.js"></script>
+<script>
+i = 0;
+start1 = 0;
+delta = 500;
+count = 150;
+function pp(xml)
+{
+	i++;
+	var out_ = (new Date()).getTime() - (start1 + delta * (i - 1));
+	console.log(i + ' in ' + out_ +' ms');
+	return true;
+}
+function sleep(milliseconds)
+{
+	var start = (new Date()).getTime();
+	while ((new Date()).getTime() - start <= milliseconds)
+	{}
+}
+
+
+</script>
+</head>
+<body>
+<script>
+	var xml_src = new String();
+	xml_src='search.do';
+	var dataString = "l=http%3A%2F%2Fmarket.yandex.ru%2Fmodel-opinions.xml%3Fmodelid%3D6055413%3Bhttp%3A%2F%2Fipadstory.ru%2Fotzyvy-ob-ipad.html%3Bhttp%3A%2F%2Fwww.irecommend.ru%2Fcontent%2Fapple-ipad-2%3Bhttp%3A%2F%2Ffor-ipad.ru%2F126-ipad-otzyvy.html%3Bhttp%3A%2F%2Fwww.e-katalog.ru%2Fopinion_ie.php%3FresolvedName_%3DAPPLE-IPAD-2-16GB%3Bhttp%3A%2F%2Fimtw.ru%2Findex.php%3Fshowtopic%3D6165%3Bhttp%3A%2F%2Fwww.SoftPortal.com%2Fget-177-hex-workshop.html%3Bhttp%3A%2F%2Fforum.ru-board.com%3A9000%2Ftopic.cgi%3Fforum%3D5%26topic%3D6593%26start%3D80%3Bhttp%3A%2F%2Fwww.twcenter.net%2Fforums%2Fshowthread.php%3Ft%3D337307%3Bhttp%3A%2F%2Fwww.PlayGround.ru%2Ffiles%2Fpatch_empire_total_war_versii_1_5-43878%2F%3B&text=ipad&page=0&length=7"
+	start1 = (new Date()).getTime();
+	for (var j = 0; j < count; j ++)
+	{
+		$.ajax({
+				type:'POST',
+				data:dataString,
+				url:xml_src,
+				scriptCharset: "utf-8" ,
+				contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+				dataType:'xml',
+				success: pp
+			});
+			sleep(delta);
+	}
+</script>
+</body>
+</html>

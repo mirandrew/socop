@@ -1,0 +1,357 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+	<head>
+		<title>SearchEngine</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<noscript><meta http-equiv=refresh content="0; url=noJSresults.html" /></noscript>
+		<META name="description" content="Все о создании html страниц" >
+		<META name="keywords" content="html страница">
+		<link rel="stylesheet" href="./classes/reset.css" type="text/css">
+		<link rel="stylesheet" href="./classes/style.css" type="text/css">
+		<link rel="stylesheet" href="./classes/chart.css" type="text/css">
+		<!--[if IE]><link rel="stylesheet" href="./classes/ie6.css" type="text/css"><![endif]-->
+		<link rel="stylesheet" href="./classes/ajax.css" type="text/css">
+		<script type="text/javascript" src="./JS/jQuery.js"></script>
+		<script type="text/javascript">
+		pages = 2;
+		function msieversion()
+		{
+			var ua = window.navigator.userAgent
+			var msie = ua.indexOf ("MSIE ")
+			if ( msie > 0 )      // If Internet Explorer, return version number
+			return parseInt (ua.substring (msie+5, ua.indexOf (".", msie )))
+			else	// If another browser, return 0
+			return 0
+		}
+		</script>
+		<script type="text/javascript">
+		var loading_gif = true;
+			function ajax1()
+			{
+				var x = $("#loader");
+
+				//var str = 'a';
+				var ttt = $("#results");
+				loading_gif = !loading_gif;
+				if (loading_gif)
+				{
+					x[0].className='load_img load_img_invisible';//x.className='load_img load_img_invisible';
+					var tmp_ = $.ajax({
+						url: "load.html",
+						cache: false,
+						success: function(html)
+						{
+							ttt[0].innerHTML += (tmp_.responseText);
+						}
+					});
+					//alert(tmp_);
+				}
+				else
+				{
+					//x[0].className='load_img load_img_visible';//x.className='load_img load_img_invisible';			
+				}
+				return true;
+			}
+			function ajax2()
+			{
+				var x = $("#loader");
+				var ttt = $("#results");
+					x[0].className='load_img load_img_visible';//x.className='load_img load_img_invisible';
+					var tmp_ = $.ajax({
+						url: "load.html",
+						cache: false,
+						success: function(html)
+						{
+							ttt[0].innerHTML += html(html);
+						}
+					});
+					//alert(tmp_);
+				
+					x[0].className='load_img load_img_invisible';//x.className='load_img load_img_invisible';			
+				
+				return true;
+			}
+			function ajax()
+			{
+					$("#loader")[0].className='load_img load_img_visible';//x.className='load_img load_img_invisible';
+					
+					//$.get("load.html",function (data){alert(data)},html);
+					var tmp_	=	$.ajax({
+								url: 'load.html',
+								dataType: 'html',
+								success: function(response)
+								{
+									var div1 = document.createElement ('DIV');
+									div1.innerHTML = response;
+									var children = div1.childNodes;
+									for(var i=0;i<children.length; i++)
+									{
+										$('#results')[0].insertBefore(children[i],$('#button_load')[0]);
+									}
+									return true;
+								}
+							});
+					$("#loader")[0].className='load_img load_img_invisible';//x.className='load_img load_img_invisible';			
+				return true;
+			}
+			
+			function parseXMLdiv(xml)
+					{
+					var toptagXML = 0;
+					if (msieversion() != 0) {toptagXML = 1;}
+					//alert(xml.childNodes[toptagXML].nodeName);
+					//alert(xml.activeElement.children[0].attributes[0].name);
+					for(var i=0;i<xml.childNodes[toptagXML].childNodes.length; i++)
+					{
+						//alert(xml.activeElement.children[i].tagName);
+						//alert(xml.childNodes[0].childNodes[i].nodeName);
+						//for(var j=0;j<xml.childNodes[0].childNodes[i].attributes.length; j++)
+						{
+							//alert(xml.activeElement.children[i].attributes[j].name);
+							//alert(xml.activeElement.children[i].attributes[j].value);
+						}
+					}
+					var a_tops = new Array();
+					var div_a_tops = new Array();
+					var a_bots = new Array();
+					var div_a_bots = new Array();
+					var div_cells = new Array();
+					var ii = 0;
+					for(var i=0;i<xml.childNodes[toptagXML].childNodes.length; i++)
+					{
+					if ((xml.childNodes[toptagXML].childNodes[i].nodeName)=="#text") {continue;}
+					ii+=1;
+						var a_top = document.createElement ('A');
+						a_top.href = xml.childNodes[toptagXML].childNodes[i].attributes[2].value;
+						a_top.className = "link_head";
+						a_top.innerHTML = xml.childNodes[toptagXML].childNodes[i].attributes[0].value;
+						
+						a_tops.push(a_top);
+						
+						var div_a_top = document.createElement ('DIV');
+						//good_cell_in
+						if (ii<2) {div_a_top.className = "bad_cell_in";}
+						else {div_a_top.className = "good_cell_in";}
+						div_a_top.appendChild(a_top);
+						
+						div_a_tops.push(div_a_top);
+						
+						
+						var a_bot = document.createElement ('A');
+						a_bot.href = xml.childNodes[toptagXML].childNodes[i].attributes[2].value;
+						a_bot.className = "link_block";
+						a_bot.innerHTML = xml.childNodes[toptagXML].childNodes[i].attributes[1].value;
+						
+						a_bots.push(a_bot);
+						
+						var div_a_bot = document.createElement ('DIV');
+						div_a_bot.className = "cell_link";//good_cell_in
+						div_a_bot.appendChild(a_bot);
+					
+						div_a_bots.push(div_a_bot);
+						
+						
+						var div_cell = document.createElement ('DIV');
+						if (ii<2) {div_cell.className = "bad_cell";}
+						else {div_cell.className = "good_cell";}
+						div_cell.appendChild(div_a_top);
+						div_cell.appendChild(div_a_bot);
+						
+						div_cells.push(div_cell);
+						
+						
+					}
+					
+					var div_bad_line = document.createElement ('DIV');
+					div_bad_line.className = "bad_line";
+					div_bad_line.appendChild(div_cells[0]);
+					div_bad_line.appendChild(div_cells[1]);
+					
+					var div_good_line = document.createElement ('DIV');
+					div_good_line.className = "good_line";
+					div_good_line.appendChild(div_cells[2]);
+					div_good_line.appendChild(div_cells[3]);
+					
+					var div_page_num = document.createElement ('DIV');
+					div_page_num.className = "page_num";
+					pages+=1;
+					div_page_num.innerHTML = pages;
+					
+					var div_bad = document.createElement ('DIV');
+					div_bad.className = "bad_";
+					div_bad.appendChild(div_bad_line);
+					
+					var div_good = document.createElement ('DIV');
+					div_good.className = "good_";
+					div_good.appendChild(div_good_line);
+					
+					var div_lane = document.createElement ('DIV');
+					div_lane.className = "lane";
+					div_lane.appendChild(div_page_num);
+					div_lane.appendChild(div_bad);
+					div_lane.appendChild(div_good);
+					
+					var div_btw = document.createElement ('DIV');
+					div_btw.className = "between_lane";
+					
+					var div_gap = document.createElement ('DIV');
+					div_gap.className = "gap_";
+					
+					
+					$('#results')[0].insertBefore(div_lane,$('#button_load')[0]);
+					$('#results')[0].insertBefore(div_btw,$('#button_load')[0]);
+					$('#results')[0].insertBefore(div_gap,$('#button_load')[0]);
+					}
+	
+			function xajax()
+			{
+				$("#loader")[0].className='load_img load_img_visible';
+				
+				var xml_rnd = new String();
+				if (Math.random()<0.5) {xml_rnd='answer.xml'}
+				else{xml_rnd='answer1.xml'}
+
+				$.ajax({
+				type:'GET',
+				url:xml_rnd,
+				dataType:'xml',
+				success: parseXMLdiv
+				});
+				
+				$("#loader")[0].className='load_img load_img_invisible';
+				return true;
+			}
+			function ajaxsearch()
+			{
+				//alert(Math.random());
+				var xml_rnd = new String();
+				if (Math.random()<0.5) {xml_rnd='answer.xml'}
+				else{xml_rnd='answer1.xml'}
+				$("#loader")[0].className='load_img load_img_visible';
+				var dataString = 'text='+ $('#txt').val();//+ '&email=' + email + '&phone=' + phone;
+				$.ajax({
+				type:'GET',
+				url:xml_rnd,
+				dataType:'xml',
+				success: parseXMLdiv
+				});
+			$("#loader")[0].className='load_img load_img_invisible';
+				return true;
+			}
+		</script>
+	</head>
+	<body>
+	<script type="text/javascript">
+	var ver = msieversion();
+	if ((ver != 0)&&(ver < 6))
+	{
+		location="noJSresults.html" 
+	}
+	</script>
+		<div class="page">
+			<div class="wrapper">
+				<div class="main_head">
+					<div class="main_top" >
+						<div class="main_text"><h1></h1></div>
+						<div class="search_">
+							<form method="get" action="" class="input">
+							<div class="logo_"></div>
+							<div class="in_form">
+								<input type=text name="text" size=18 value="" maxlength=120 class="text_field" id="txt">
+								<input type=submit value="Искать!" class="button_field" onClick="ajaxsearch();return false;">
+							</div>
+							</form>
+						</div>
+					</div>
+				</div>
+				<div class="main">
+					<div class="chart_">
+					<div class="chart_text">
+					Результы поиска
+					</div>
+						<div class="percentage_">
+							<div class="bad_percent">
+							<p class="proc_p">35%</p>
+							</div>
+							<div class="good_percent">
+							<p class="proc_p">65%</p>
+							</div>
+						</div>
+					</div>
+					<div class="chart_shadow"></div>
+					<div class="gap_"></div>
+					<div class="results_wrapper">
+						<div class="results" id="results">
+							<div class="lane">
+							<div class="page_num">1</div>
+								<div class="bad_">
+									<div class="bad_line">
+										<div class="bad_cell"><div class="bad_cell_in"><a href="out1.html" class="link_head">Полный ужас!</a></div><div class="cell_link"><a href="out.html" class="link_block">Ipsum dol consectetuer adipiscing elit. Morbi commodo, ipsum sed pharetra gravida, orci magna rhoncus neque, id pulvinar odio lorem non turpis.</a></div></div>
+										<div class="bad_cell"><div class="bad_cell_in"><a href="out1.html" class="link_head">Ужасное обслуживание</a></div><div class="cell_link"><a href="out.html" class="link_block">Suspendisse quam sem, consequat at, commodo vitae, feugiat in, nunc. Donec sed tellus eget sapien fringilla nonummy.</a></div></div>
+									</div>
+								</div>
+								<div class="good_">
+									<div class="good_line">
+										<div class="good_cell"><div class="good_cell_in"><a href="out1.html" class="link_head">Великолепно! Нет слов!</a></div><div class="cell_link"><a href="out.html" class="link_block">Ipsum dol consectetuer adipiscing elit. Morbi commodo, ipsum sed pharetra gravida, orci magna rhoncus neque, id pulvinar odio lorem non turpis.</a></div></div>
+										<div class="good_cell"><div class="good_cell_in"><a href="out1.html" class="link_head">Хочу ходить сюда снова и снова!</a></div><div class="cell_link"><a href="out.html" class="link_block">Suspendisse quam sem, consequat at, commodo vitae, feugiat in, nunc. Donec sed tellus eget sapien fringilla nonummy.</a></div></div>
+									</div>
+								</div>
+								<div class="center_results"></div>
+							</div>
+							<div class="between_lane"></div>
+							<div class="lane">
+							<div class="page_num">2</div>
+									<div class="bad_">
+										<div class="bad_line">
+											<div class="bad_cell"><div class="bad_cell_in"><a href="out1.html" class="link_head">Дурят нашего брата...</a></div><div class="cell_link"><a href="out.html" class="link_block">Ipsum dol consectetuer adipiscing elit. Morbi commodo, ipsum sed pharetra gravida, orci magna rhoncus neque, id pulvinar odio lorem non turpis.</a></div></div>
+											<div class="bad_cell"><div class="bad_cell_in"><a href="out1.html" class="link_head">Жутко жалею о посещении</a></div><div class="cell_link"><a href="out.html" class="link_block">Suspendisse quam sem, consequat at, commodo vitae, feugiat in, nunc. Donec sed tellus eget sapien fringilla nonummy.</a></div></div>
+										</div>
+									</div>
+									<div class="good_">
+										<div class="good_line">
+											<div class="good_cell"><div class="good_cell_in"><a href="out1.html" class="link_head">Приятный обслуживающий персонал!</a></div><div class="cell_link"><a href="out.html" class="link_block">Ipsum dol consectetuer adipiscing elit. Morbi commodo, ipsum sed pharetra gravida, orci magna rhoncus neque, id pulvinar odio lorem non turpis.</a></div></div>
+											<div class="good_cell"><div class="good_cell_in"><a href="out1.html" class="link_head">Низкие цены.</a></div><div class="cell_link"><a href="out.html" class="link_block">Suspendisse quam sem, consequat at, commodo vitae, feugiat in, nunc. Donec sed tellus eget sapien fringilla nonummy.</a></div></div>
+										</div>
+									</div>
+									<div class="center_results"></div>
+							</div>
+							<div class="between_lane"></div>
+							<div class="gap_"></div>
+							<div class="more_results" id="button_load">
+								<div class="more_results_link">
+									<a href="javascript.void(0);" class="link_block_button" onclick="xajax();return false;" >
+										<img src="./images/more.png" class="more_img" alt="Ещё!">
+									</a>
+									<img id="loader" src="./images/loading.gif" class="load_img load_img_invisible" alt="Загрузка...">
+								</div>
+							</div>
+							<div class="between_lane"></div>
+							<div class="gap_"></div>
+						</div>
+					</div>
+					<div class="pages_">
+						<div class="page_b"><a href="./index.html" class="page_link_i"><img src="./images/circle_numbers_left.png" class="Back" alt="Назад!"></a></div>
+						<div class="page_f"><a href="./index.html" class="page_link_i"><img src="./images/circle_numbers_right.png" class="Forward" alt="Вперёд!"></a></div>
+						<div class="page_"><a href="./index.html" class="page_link">1</a></div>
+						<div class="page_"><a href="./index.html" class="page_link">2</a></div>
+						<div class="page_"><a href="./index.html" class="page_link">3</a></div>
+						<div class="page_">...</div>
+						<div class="page_"><a href="./index.html" class="page_link">10</a></div>
+						
+					</div>
+					<div class="gap_"></div>
+					<div class="gap_"></div>
+
+				</div>
+			</div>
+		</div>
+		<div class="footer">
+				<div class="footer_links"><a href="./index.html" class="footer_link">Домой</a></div>
+				<div class="footer_links"><a href="./index.html" class="footer_link">index.html</a></div>
+				<div class="footer_links"><a href="./noJSindex.html" class="footer_link">noJSindex</a></div>
+				<div class="footer_links"><a href="./results.html" class="footer_link">results.html</a></div>
+				<div class="footer_links"><a href="./noJSresults.html" class="footer_link">noJSresults.html</a></div>
+				<div class="subfooter"><div class="subfooter_text">Петрухин, Миронов, 2012</div></div>
+		</div>
+	</body>
+</html>

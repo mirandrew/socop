@@ -1,0 +1,155 @@
+package ru.socop.web;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+//import javax.xml.bind.Element;
+
+import org.jsoup.Connection;
+import org.jsoup.Connection.Method;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+//import com.sun.jmx.trace.Trace;
+
+import ru.socop.model.FakeData;
+import ru.socop.model.OpNode;
+import ru.socop.model.QuadNode;
+import ru.socop.model.ResourceNode;
+import ru.socop.opineval.BayesClassifier;
+import ru.socop.opineval.Classifier;
+import ru.socop.opineval.OpenLink;
+import ru.socop.opineval.OpinionsFinder;
+import ru.socop.opineval.ResourceNodeCreator;
+import ru.socop.utils.DomClientXmlFormer;
+//import ru.socop.utils.NodeListAnalizer;
+import ru.socop.utils.ResourceHelper;
+
+/**
+ * Servlet реагирующий на поисковый запрос пользователя
+ */
+@WebServlet("/SearchServlet")
+public class SearchServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		// получаем параметры запроса
+		String searchString = request.getParameter("text");
+		String linksString = request.getParameter("l");
+		int page = 0;
+		int length = 0;
+		if (request.getParameter("page") != null && request.getParameter("length") != null) {
+			page = Integer.parseInt(request.getParameter("page"));
+			length = Integer.parseInt(request.getParameter("length"));
+		
+		/// Everything below is only for testing //////////////////////
+		
+		// JSOUP (nigma.ru)
+//		String searchUri = "http://nigma.ru/?s=" + searchString + "%20отзывы";
+//		Document jsoupDoc = Jsoup.connect(searchUri).get();
+//		Elements results = jsoupDoc.select("div#results");
+//		Elements links = results.select("a[href]");
+		
+		// OpinEval
+			Classifier c1 = new BayesClassifier();
+			String path = getServletContext().getRealPath("web-inf/classes/1.classifier");
+			
+			BayesClassifier bayes = null;
+			try {
+				c1 = c1.load(path);
+				bayes = (BayesClassifier)c1;
+				bayes.setClassificationThreashold(2);
+				bayes.setFeatureThreshhold(3);
+			}
+			catch (Exception e) {}
+			ResourceNodeCreator rnc = new ResourceNodeCreator(bayes);
+			
+			// cycling on links and making resourceNodes
+			// список ресурсов (будет заполняться ядром)
+			List<ResourceNode> resoureNodes = new ArrayList<ResourceNode>();
+			List<OpNode> allOpNodes = new ArrayList<OpNode>();
+			String[] linksArray = linksString.split(";");
+			// счётчики всех отзывов по типам
+			int negCounter = 0;
+			int posConter = 0;
+			for (String link : linksArray) {
+				//String linkPart = link.attr("abs:href").substring(0, 18);
+				ResourceNode rn = null;
+				//if (linkPart.compareTo("http://nigmaru.com") != 0 && linkPart.compareTo("http://direct.yand") != 0) {
+				try {
+					OpenLink.setTimeout(5000);
+					OpinionsFinder.setMinimumWordsNumber(6);
+					rn = rnc.create(link, searchString, ResourceNodeCreator.ALL);
+				}
+				catch (Exception e) {}
+				//}
+				if (rn != null && (rn.getNeg() != 0 || rn.getPos() != 0)) {
+					allOpNodes.addAll(rn.getOpNodes());
+					posConter += rn.getPos();
+					negCounter += rn.getNeg();
+				}
+					
+			}
+			
+			// проанализируем результат другим алгоритмом типизации отзывов
+//			String filePath = getServletContext().getRealPath("web-inf/assets/dict_source.txt");
+//			NodeListAnalizer nodeListAnalizer = new NodeListAnalizer(allOpNodes, filePath);
+//			nodeListAnalizer.loadDict();
+//			List<OpNode> opNodeByAnaliser;
+//			try {
+//				opNodeByAnaliser = nodeListAnalizer.analiseByPreDict();
+//			}
+//			catch (Exception e) {}
+			
+			int allCounter = posConter + negCounter;
+			double goodpc = 0; 
+			double badpc =  0;
+			if (allCounter > 0) {
+				goodpc = Math.round(posConter * 100 / allCounter);
+				badpc = 100 - goodpc;
+			}
+			// Теперь мы можем вытянуть долгожданный список квадра-нодов
+			List<QuadNode> quadNodesList = ResourceHelper.getQuadNodes(allOpNodes);
+			
+				
+			////////////////////////////////////////////////////////////
+			
+			// получаем результат обработки запроса (пока фейковый)
+			//List<QuadNode> quadNodesList = FakeData.getFakeQuadNodes();
+			
+			 // формирования ответа
+			response.setContentType("text/xml; charset=UTF-8");
+			response.setCharacterEncoding("UTF-8");
+			PrintWriter out = response.getWriter();
+			// формируем xml
+			DomClientXmlFormer xmlFormer = new DomClientXmlFormer(quadNodesList);
+			String xmlString = xmlFormer.getXmlString(page, length, goodpc, badpc);
+			out.println(xmlString);
+		}
+//		else {
+//			out.println("");
+//			//throw new ServletException();
+//		}
+	}
+	
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		doGet(request, response);
+		//String searchString = request.getParameter("text");
+	}
+
+}

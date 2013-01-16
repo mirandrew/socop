@@ -1,0 +1,137 @@
+<html>
+	<script type="text/javascript" src="./jQuery.js"></script>
+	<script type="text/javascript" src="./js/easyXDM.debug.js">// This should be changed so that it points to the minified version before use in production.
+    </script>
+	<script>
+	$.ajaxSetup({
+  beforeSend: function(request) {
+   // request.setRequestHeader("User-Agent","Opera/9.80 (Android; Opera Mini/7.29530/27.1407; U; en) Presto/2.8.119 Version/11.10");
+  }
+});
+// Base URI for Web service  
+var yql_base_uri = "http://query.yahooapis.com/v1/yql";  
+  
+// Create a variable to make results available  
+// in the global namespace  
+var yql_results = "";  
+  
+// Create a YQL query to get geo data for the  
+// San Francisco International Airport  
+var yql_query = "SELECT * from geo.places WHERE text='SFO'";  
+  
+// Callback function for handling response data  
+function handler(rsp) {     
+  if(rsp.data){             
+    yql_results = rsp.data;  
+  }  
+}  
+	function tt_()
+	{
+
+	}
+	function load_()
+	{
+		//$('#result').load('http://google.com/');
+//		$('#result').load('http://ya.ru');
+			  var rpc = new easyXDM.Rpc({
+				remote: "./js/cors/"
+			},
+			{
+				remote: {
+					request: {}
+				}
+			});
+
+			rpc.request({
+				url: "http://ya.ru/",
+				method: "POST",
+				data: {foo: "bar", bar: "foo"}
+			}, function(response){
+				alert(response.data);
+			});
+
+
+		return false;
+	}
+	function ParseHTML(html_)
+	{
+		alert("html_");
+		var i = 0;
+		return false;
+	}
+		function press()
+		{
+			
+			var site_ = new String();
+			site_="http://nigma.ru/";
+			var txt_ = "android";
+			var dataString = 's=' + txt_;
+		var tmp_=$.ajax({
+		url:site_,
+		type:"GET", 
+		data:dataString,
+		dataType:"html",
+		success:function(t)
+		{
+			alert("1");
+		},
+		error: function(jqXHR, textStatus, errorThrown)
+		{
+			alert(jqXHR);
+			alert(textStatus);
+			alert(errorThrown);
+		},
+		statusCode:
+				{
+					404: function() {
+					alert('page not found');
+					}
+				},
+		crossDomain:true
+		});
+							//type:"GET",
+							//url: site_
+							//url: "load.html",
+							/*cache: false,
+							dataType: dataString,
+							error: function(response)
+							{
+								alert("2");
+							},
+							success: function(response)
+							{
+								alert("1");*/
+							/*	var div1 = document.createElement ('DIV');
+								div1.innerHTML = response;
+								var children = div1.childNodes;
+								for(var i=0;i<children.length; i++)
+								{
+									$('#results')[0].insertBefore(children[i],$('#button_load')[0]);
+								}
+								return true;*/
+							//}
+						//});
+						var i =0;
+		/*	$.ajax({
+				type:'GET',
+				data:dataString,
+				url:site_,
+				scriptCharset: "utf-8" ,
+				contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+				dataType:'html',
+				success: ParseHTML
+			});
+			return false;*/
+		}
+		
+	</script>
+<body>
+<a href="javascript:void(0);" onclick="press();">тык</a>
+<a href="javascript:void(0);" onclick="load_();">тык</a>
+<a href="javascript:void(0);" onclick="tt_();">тыкtt</a>
+<div id="result">aaa</div>
+<html>
+<iframe frameborder=0 height=1000 width=1200 scrolling=no src='http://socop.ru/' id="ifr_">
+</html>
+</body>
+</html>

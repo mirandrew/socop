@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
+  <servlet>
+    <servlet-name>searchServlet</servlet-name>
+    <servlet-class>ru.socop.web.SearchServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>searchServlet</servlet-name>
+    <url-pattern>/search.do</url-pattern>
+  </servlet-mapping>
+   <servlet>
+    <servlet-name>testLoggingServlet</servlet-name>
+    <servlet-class>ru.socop.web.TestLoggingServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>testLoggingServlet</servlet-name>
+    <url-pattern>/testlogging</url-pattern>
+  </servlet-mapping>
+  <listener>
+  	<listener-class>
+  		ru.socop.listeners.GeneralListener	
+  	</listener-class>
+  </listener>
+</web-app>
